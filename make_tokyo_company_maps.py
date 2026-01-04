@@ -2,9 +2,13 @@
 # -*- coding: utf-8 -*-
 
 """
-make_tokyo_company_maps.py (v2 - Fixed)
+make_tokyo_company_maps.py
 
 Google My Maps にインポートできるCSVを生成
+
+データソース:
+  - 日本Top200: CompaniesMarketCap (CSV download)
+  - 外資系: S&P500/Fortune Global 500 × Japan Dev "global-offices" の交差
 
 出力:
   - japan_top200_mymaps.csv
@@ -34,14 +38,13 @@ DEBUG_DIR = OUT_DIR / "debug"
 
 CMCAP_CSV_URLS = [
     "https://companiesmarketcap.com/japan/largest-companies-in-japan-by-market-cap/?download=csv",
-    "https://companiesmarketcap.com/usd/japan/largest-companies-in-japan-by-market-cap/?download=csv",
 ]
 
-BUILTIN_URLS = [
-    "https://builtin.com/articles/us-companies-in-tokyo",
-    "https://builtin.com/articles/tech-companies-in-tokyo",
-]
-JP_SW_COMPANIES_MD = "https://raw.githubusercontent.com/btamada/jp-software-companies/master/README.md"
+# S&P 500 リスト取得元
+SP500_URL = "https://www.slickcharts.com/sp500"
+
+# Japan Dev - Global Offices タグ
+JAPAN_DEV_URL = "https://japan-dev.com/companies/tags/global-offices"
 
 UA = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -178,8 +181,8 @@ def _parse_cmc_csv(csv_text: str) -> List[CompanyRow]:
                 ticker=sym_raw or None,
                 market_cap_usd=_format_marketcap(mcap_raw),
                 category="JapanTop200",
-                address_query=f"{name_raw} 本社 東京",
-                source="CompaniesMarketCap(download=csv)",
+                address_query=f"{name_raw} 本社",
+                source="CompaniesMarketCap",
             ))
 
         by_rank = {}
@@ -203,173 +206,95 @@ def fetch_japan_top200(*, debug: bool = False) -> List[CompanyRow]:
 
 
 # =========================
-# 外資系企業 - 確実なリスト（実際の住所付き）
+# S&P 500 リスト取得
 # =========================
-# (会社名, 住所, URL) - 住所はGoogle Mapsで正確にジオコーディングできる形式
-KNOWN_FOREIGN_COMPANIES = [
-    # === Big Tech ===
-    ("Google", "東京都渋谷区渋谷3丁目21-3 渋谷ストリーム", "https://www.google.com/about/careers/locations/tokyo/"),
-    ("Microsoft", "東京都港区港南2-16-3 品川グランドセントラルタワー", "https://microsoft.com/ja-jp/"),
-    ("Amazon Japan", "東京都目黒区下目黒1-8-1 アルコタワー", "https://www.amazon.jobs/en/locations/tokyo-area-japan"),
-    ("Apple", "東京都港区六本木6-10-1 六本木ヒルズ", "https://www.apple.com/jp/"),
-    ("Meta", "東京都港区虎ノ門1-23-1 虎ノ門ヒルズ森タワー", "https://www.meta.com/"),
-    ("IBM", "東京都中央区日本橋箱崎町19-21", "https://www.ibm.com/jp-ja"),
-    ("Oracle", "東京都港区北青山2-5-8 オラクル青山センター", "https://www.oracle.com/jp/"),
-    ("SAP", "東京都千代田区大手町1-2-1 三井物産ビル", "https://www.sap.com/japan/"),
-    ("Salesforce", "東京都千代田区丸の内1-1-3 日本生命丸の内ガーデンタワー", "https://www.salesforce.com/jp/"),
-    ("Adobe", "東京都品川区大崎1-11-2 ゲートシティ大崎イーストタワー", "https://www.adobe.com/jp/"),
-    ("Cisco", "東京都港区赤坂9-7-1 ミッドタウン・タワー", "https://www.cisco.com/c/ja_jp/"),
-    ("Intel", "東京都千代田区丸の内3-1-1 国際ビル", "https://www.intel.co.jp/"),
-    ("Nvidia", "東京都港区赤坂9-7-1 ミッドタウン・タワー", "https://www.nvidia.com/ja-jp/"),
-    ("Dell Technologies", "東京都千代田区大手町1-2-1 Otemachi Oneタワー", "https://www.dell.com/ja-jp"),
-    ("VMware", "東京都港区芝浦3-1-1 田町ステーションタワーN", "https://www.vmware.com/jp.html"),
-    ("Qualcomm", "東京都港区北青山2-14-4 アーガイル青山", "https://www.qualcomm.com/"),
+def fetch_sp500_companies(*, debug: bool = False) -> Set[str]:
+    """
+    S&P 500 企業名を取得（slickcharts.comから）
+    """
+    print("  [1] Fetching S&P 500 list...")
+    html = _get(SP500_URL, debug=debug, debug_name="sp500.html")
+    if not html:
+        print("      Failed to fetch, using fallback")
+        return _get_fallback_sp500()
     
-    # === Finance ===
-    ("Goldman Sachs", "東京都港区六本木6-10-1 六本木ヒルズ森タワー", "http://www.goldmansachs.com/japan/"),
-    ("Morgan Stanley", "東京都千代田区大手町1-9-7 大手町フィナンシャルシティサウスタワー", "http://www.morganstanley.co.jp/"),
-    ("JP Morgan", "東京都千代田区丸の内2-7-3 東京ビルディング", "https://www.jpmorgan.com/JP/"),
-    ("Barclays", "東京都港区六本木6-10-1 六本木ヒルズ森タワー", "http://joinus.barclays.com/japan/"),
-    ("Citibank", "東京都千代田区大手町1-1-1 大手町パークビル", "https://www.citigroup.jp/"),
-    ("UBS", "東京都千代田区大手町1-5-1 大手町ファーストスクエア", "https://www.ubs.com/jp/"),
-    ("Credit Suisse", "東京都港区六本木1-6-1 泉ガーデンタワー", "https://www.credit-suisse.com/jp/"),
-    ("Deutsche Bank", "東京都千代田区永田町2-11-1 山王パークタワー", "https://www.db.com/japan/"),
-    ("HSBC", "東京都中央区日本橋3-11-1", "https://www.hsbc.co.jp/"),
-    ("BlackRock", "東京都千代田区丸の内1-8-3 丸の内トラストタワー", "https://www.blackrock.com/jp/"),
-    ("Bloomberg", "東京都千代田区丸の内2-4-1 丸の内ビルディング", "https://www.bloomberg.co.jp/"),
-    
-    # === Consulting ===
-    ("Accenture", "東京都港区赤坂1-8-1 赤坂インターシティAIR", "https://www.accenture.com/jp-ja"),
-    ("Deloitte", "東京都千代田区丸の内3-2-3 丸の内二重橋ビルディング", "https://www2.deloitte.com/jp/"),
-    ("PwC", "東京都千代田区大手町1-1-1 大手町パークビルディング", "https://www.pwc.com/jp/"),
-    ("McKinsey", "東京都港区六本木1-6-1 泉ガーデンタワー", "https://www.mckinsey.com/jp/"),
-    ("Boston Consulting Group", "東京都千代田区丸の内1-6-1 丸の内センタービル", "https://www.bcg.com/ja-jp/"),
-    ("Bain & Company", "東京都港区赤坂9-7-1 ミッドタウン・タワー", "https://www.bain.com/ja/"),
-    ("EY", "東京都千代田区有楽町1-1-2 東京ミッドタウン日比谷", "https://www.ey.com/ja_jp"),
-    ("KPMG", "東京都千代田区大手町1-9-5 大手町フィナンシャルシティ ノースタワー", "https://home.kpmg/jp/"),
-    
-    # === Tech/SaaS ===
-    ("Stripe", "東京都渋谷区神宮前6-12-18", "https://stripe.com/jp"),
-    ("Indeed", "東京都渋谷区恵比寿4-20-3 恵比寿ガーデンプレイスタワー", "https://www.indeed.jobs/"),
-    ("Elastic", "東京都渋谷区渋谷2-24-12 渋谷スクランブルスクエア", "https://www.elastic.co.jp/"),
-    ("Slack", "東京都千代田区丸の内1-1-3 日本生命丸の内ガーデンタワー", "https://slack.com/intl/ja-jp/"),
-    ("Atlassian", "東京都港区虎ノ門4-1-1 神谷町トラストタワー", "https://www.atlassian.com/ja"),
-    ("Datadog", "東京都港区六本木1-4-5 アークヒルズサウスタワー", "https://www.datadoghq.com/ja/"),
-    ("Snowflake", "東京都千代田区丸の内1-6-5 丸の内北口ビル", "https://www.snowflake.com/ja/"),
-    ("ServiceNow", "東京都港区赤坂1-12-32 アーク森ビル", "https://www.servicenow.com/jp/"),
-    ("Workday", "東京都港区虎ノ門1-23-1 虎ノ門ヒルズ森タワー", "https://www.workday.com/ja-jp/"),
-    ("Splunk", "東京都千代田区大手町1-1-1 大手町パークビル", "https://www.splunk.com/ja_jp"),
-    ("Twilio", "東京都渋谷区神宮前5-52-2 青山オーバルビル", "https://www.twilio.com/ja-jp"),
-    
-    # === Security ===
-    ("CrowdStrike", "東京都港区虎ノ門1-23-1 虎ノ門ヒルズ森タワー", "https://www.crowdstrike.jp/"),
-    ("Snyk", "東京都渋谷区渋谷2-24-12 渋谷スクランブルスクエア", "https://snyk.io/"),
-    ("Rubrik", "東京都港区虎ノ門1-17-1 虎ノ門ヒルズビジネスタワー", "https://www.rubrik.com/ja"),
-    ("Palo Alto Networks", "東京都千代田区丸の内1-8-1 丸の内トラストタワーN館", "https://www.paloaltonetworks.jp/"),
-    ("Fortinet", "東京都港区六本木7-7-7 Tri-Seven Roppongi", "https://www.fortinet.com/jp"),
-    
-    # === From BuiltIn ===
-    ("Qualtrics", "東京都千代田区丸の内1-5-1 新丸の内ビルディング", "https://www.qualtrics.com/"),
-    ("Crunchyroll", "東京都渋谷区渋谷2-21-1 渋谷ヒカリエ", "https://www.crunchyroll.com/"),
-    ("Braze", "東京都渋谷区神宮前6-12-18", "https://www.braze.com/"),
-    ("Dynatrace", "東京都千代田区丸の内2-1-1 丸の内MY PLAZA", "https://www.dynatrace.com/"),
-    ("Rokt", "東京都港区六本木1-6-1 泉ガーデンタワー", "https://www.rokt.com/"),
-    ("Schrödinger", "東京都千代田区丸の内1-8-3 丸の内トラストタワー", "https://www.schrodinger.com/"),
-    ("Flatiron Health", "東京都港区港南2-16-3 品川グランドセントラルタワー", "https://flatiron.com/"),
-    
-    # === Entertainment/Gaming ===
-    ("Netflix", "東京都港区赤坂9-7-1 ミッドタウン・タワー", "https://www.netflix.com/jp/"),
-    ("Spotify", "東京都渋谷区神宮前6-35-3 JUNCTION harajuku", "https://www.spotify.com/jp/"),
-    ("Niantic", "東京都渋谷区神宮前6-28-6 キュープラザ原宿", "https://nianticlabs.com/"),
-    ("Unity", "東京都中央区銀座6-10-1 GINZA SIX", "https://unity.com/ja"),
-    
-    # === Others ===
-    ("Uber", "東京都渋谷区渋谷2-24-12 渋谷スクランブルスクエア", "https://www.uber.com/jp/"),
-    ("PayPal", "東京都港区虎ノ門1-17-1 虎ノ門ヒルズビジネスタワー", "https://www.paypal.com/jp/"),
-    ("Airbnb", "東京都新宿区西新宿6-24-1 西新宿三井ビルディング", "https://www.airbnb.jp/"),
-    ("LinkedIn", "東京都千代田区丸の内2-4-1 丸の内ビルディング", "https://www.linkedin.com/"),
-    ("Zoom", "東京都渋谷区神宮前5-52-2 青山オーバルビル", "https://zoom.us/ja-jp/"),
-    ("Dropbox", "東京都港区六本木3-2-1 住友不動産六本木グランドタワー", "https://www.dropbox.com/ja/"),
-    
-    # === Pharma ===
-    ("Johnson & Johnson", "東京都千代田区西神田3-5-2", "https://www.jnj.co.jp/"),
-    ("Pfizer", "東京都渋谷区代々木3-22-7 新宿文化クイントビル", "https://www.pfizer.co.jp/"),
-    ("Merck", "東京都千代田区九段北1-13-12 北の丸スクエア", "https://www.msd.co.jp/"),
-    ("Roche", "東京都港区港南1-2-70 品川シーズンテラス", "https://www.roche.co.jp/"),
-    ("Novartis", "東京都港区虎ノ門1-23-1 虎ノ門ヒルズ森タワー", "https://www.novartis.co.jp/"),
-    ("AstraZeneca", "東京都港区芝5-33-1 森永プラザビル", "https://www.astrazeneca.co.jp/"),
-    
-    # === Others ===
-    ("Houzz", "東京都港区六本木7-7-7 Tri-Seven Roppongi", "https://www.houzz.jp/"),
-    ("Applied Intuition", "東京都渋谷区渋谷2-24-12 渋谷スクランブルスクエア", "https://www.appliedintuition.com/"),
-    ("Slalom", "東京都千代田区大手町1-9-2 大手町フィナンシャルシティ グランキューブ", "https://www.slalom.com/"),
-    ("Reaktor", "東京都渋谷区神宮前5-52-2 青山オーバルビル", "https://www.reaktor.com/"),
-    ("Kraken Technologies", "東京都港区六本木1-4-5 アークヒルズサウスタワー", "https://kraken.tech/"),
-]
-
-
-# =========================
-# GitHub README parser
-# =========================
-def _strip_markdown_link(s: str) -> Tuple[str, Optional[str]]:
-    m = re.fullmatch(r"\[([^\]]+)\]\(([^)]+)\)", (s or "").strip())
-    if not m:
-        return (s or "").strip(), None
-    return m.group(1).strip(), m.group(2).strip()
-
-
-def _parse_github_md(md: str) -> List[Tuple[str, str, Optional[str]]]:
-    lines = (md or "").splitlines()
-    table_started = False
-    rows = []
-    for ln in lines:
-        if ln.strip().startswith("| Company") and "Location" in ln:
-            table_started = True
-            continue
-        if not table_started:
-            continue
-        if not ln.strip().startswith("|"):
-            if ln.startswith("#"):
-                table_started = False
-            continue
-        if "---" in ln:
-            continue
-        cols = [c.strip() for c in ln.strip().strip("|").split("|")]
-        if len(cols) < 2:
-            continue
-        company, url = _strip_markdown_link(cols[0])
-        if company and cols[1]:
-            rows.append((company.strip(), cols[1].strip(), url))
-    return rows
-
-
-# =========================
-# BuiltIn parser (Fixed)
-# =========================
-def _parse_builtin(html: str) -> List[str]:
-    """BuiltInの記事から会社名を抽出（h3タグから）"""
     soup = BeautifulSoup(html, "html.parser")
-    names = []
+    companies = set()
     
-    # h3タグで会社名を探す（View Profileリンクの近くにある）
-    for h3 in soup.find_all("h3"):
-        # h3内のaタグを探す
-        link = h3.find("a")
-        if link:
+    # テーブルから企業名を抽出
+    for row in soup.find_all("tr"):
+        cells = row.find_all("td")
+        if len(cells) >= 2:
+            # 2列目が企業名
+            name_cell = cells[1]
+            link = name_cell.find("a")
+            if link:
+                name = _clean_text(link.get_text())
+                if name:
+                    companies.add(name)
+    
+    print(f"      Found {len(companies)} S&P 500 companies")
+    return companies
+
+
+def _get_fallback_sp500() -> Set[str]:
+    """S&P500のフォールバックリスト（主要企業のみ）"""
+    return {
+        # Big Tech
+        "Apple", "Microsoft", "Nvidia", "Alphabet", "Amazon", "Meta Platforms",
+        "Broadcom", "Tesla", "Oracle", "Salesforce", "Adobe", "Cisco",
+        "Intel", "IBM", "Qualcomm", "AMD", "Netflix", "ServiceNow",
+        # Finance
+        "Berkshire Hathaway", "JPMorgan Chase", "Visa", "Mastercard",
+        "Bank of America", "Wells Fargo", "Goldman Sachs", "Morgan Stanley",
+        "American Express", "Citigroup", "BlackRock", "Charles Schwab",
+        # Healthcare
+        "Eli Lilly", "UnitedHealth", "Johnson & Johnson", "Merck", "AbbVie",
+        "Pfizer", "Thermo Fisher Scientific", "Abbott Laboratories",
+        # Consumer
+        "Walmart", "Costco", "Home Depot", "McDonald's", "Nike", "Starbucks",
+        "Procter & Gamble", "Coca-Cola", "PepsiCo",
+        # Industrial
+        "GE Aerospace", "Caterpillar", "Boeing", "Honeywell", "3M",
+        "Lockheed Martin", "RTX Corporation",
+        # Energy
+        "ExxonMobil", "Chevron",
+        # Others
+        "Accenture", "Uber", "Airbnb", "PayPal", "Booking Holdings",
+    }
+
+
+# =========================
+# Japan Dev 企業リスト取得
+# =========================
+def fetch_japan_dev_companies(*, debug: bool = False) -> Dict[str, str]:
+    """
+    Japan Dev の global-offices タグから企業名を取得
+    戻り値: {企業名: Japan Dev URL}
+    """
+    print("  [2] Fetching Japan Dev global-offices list...")
+    html = _get(JAPAN_DEV_URL, debug=debug, debug_name="japan_dev.html")
+    if not html:
+        print("      Failed to fetch")
+        return {}
+    
+    soup = BeautifulSoup(html, "html.parser")
+    companies = {}
+    
+    # 企業カードから名前を抽出
+    # h2タグの中のリンクが企業名
+    for h2 in soup.find_all("h2"):
+        link = h2.find("a")
+        if link and link.get("href", "").startswith("/companies/"):
             name = _clean_text(link.get_text())
-            if name and len(name) > 1 and len(name) < 50:
-                # ノイズ除外
-                if name.lower() not in {"remote", "jobs", "companies", "articles", "more"}:
-                    names.append(name)
+            # "NEW!" プレフィックスを除去
+            name = re.sub(r"^NEW!\s*", "", name, flags=re.I).strip()
+            if name and len(name) > 1:
+                url = f"https://japan-dev.com{link.get('href')}"
+                companies[name] = url
     
-    # 重複除去
-    seen = set()
-    out = []
-    for n in names:
-        if n not in seen:
-            seen.add(n)
-            out.append(n)
-    return out
+    print(f"      Found {len(companies)} companies with Tokyo offices")
+    return companies
 
 
 # =========================
@@ -377,81 +302,109 @@ def _parse_builtin(html: str) -> List[str]:
 # =========================
 JP_BLACKLIST = {
     x.lower() for x in [
-        "dentsu", "dena", "mercari", "nomura", "recruit", "line", "kakaku",
-        "moneyforward", "pixiv", "retty", "septeni", "m3", "interspace",
-        "mediweb", "rakuten", "gmo", "gree", "dmm", "dwango", "cyberagent",
-        "cookpad", "gungho", "gunosy", "i-mobile", "freakout", "finc",
-        "crowdworks", "bizreach", "smartnews", "wantedly", "voyagegroup",
-        "fast retailing", "softbank", "sony", "toyota", "honda", "nintendo",
-        "hitachi", "panasonic", "toshiba", "fujitsu", "nec", "sharp", "canon",
-        "nikon", "mitsubishi", "mitsui", "sumitomo", "mizuho",
+        # 明らかな日本企業
+        "Rakuten", "SoftBank", "Sony", "Toyota", "Honda", "Nintendo",
+        "Mercari", "LINE", "DeNA", "GREE", "CyberAgent", "Cookpad",
+        "SmartNews", "Wantedly", "Sansan", "M3", "Kaizen Platform",
+        "Fast Retailing", "Preferred Networks", "Cybozu", "GLOBIS",
+        # GitHub READMEに含まれる日本企業
+        "dentsu", "nomura", "recruit", "kakaku", "moneyforward", "pixiv",
+        "retty", "septeni", "interspace", "mediweb", "gmo", "dmm", "dwango",
+        "gungho", "gunosy", "i-mobile", "freakout", "finc", "crowdworks",
+        "bizreach", "voyagegroup", "hitachi", "panasonic", "toshiba",
+        "fujitsu", "nec", "sharp", "canon", "nikon", "mitsubishi",
+        "mitsui", "sumitomo", "mizuho", "Sony Interactive Entertainment",
     ]
 }
 
 
-def is_japanese(name: str, url: Optional[str]) -> bool:
+def is_japanese(name: str, url: Optional[str] = None) -> bool:
     nlow = name.lower()
     if nlow in JP_BLACKLIST:
         return True
+    # 日本語が含まれる
     if re.search(r"(株式会社|有限会社|合同会社|ホールディングス|銀行|証券)", name):
         return True
-    if url and ".co.jp" in url.lower():
-        return True
     return False
+
+
+# =========================
+# 住所クエリ生成
+# =========================
+def make_address_query(name: str) -> str:
+    """
+    Google My Mapsのジオコーディング用の住所クエリを生成
+    """
+    # 会社名から余計な suffix を除去
+    clean_name = re.sub(
+        r'\s*(Inc\.?|Corp\.?|Ltd\.?|LLC|Co\.?,?\s*Ltd\.?|Corporation|,?\s*Inc\.?|plc)$',
+        '', name, flags=re.I
+    ).strip()
+    return f"{clean_name} 東京オフィス"
 
 
 # =========================
 # Foreign Tokyo 50
 # =========================
 def build_foreign_tokyo50(*, debug: bool = False, exclude_names: Optional[Set[str]] = None) -> List[CompanyRow]:
-    all_candidates: List[Tuple[str, str, Optional[str], str]] = []
+    """
+    外資系企業リストを構築
     
-    # 1. 確実なリストを最初に追加
-    print("  [1] Loading known foreign companies list...")
-    for name, loc, url in KNOWN_FOREIGN_COMPANIES:
-        all_candidates.append((name, loc, url, "KnownList"))
-    print(f"      Added {len(KNOWN_FOREIGN_COMPANIES)} companies")
-    
-    # 2. GitHub README
-    print("  [2] Fetching GitHub jp-software-companies...")
-    md = _get(JP_SW_COMPANIES_MD, debug=debug, debug_name="github_readme.md")
-    github_count = 0
-    if md:
-        for name, loc, url in _parse_github_md(md):
-            if "Tokyo" in loc:
-                all_candidates.append((name, loc, url, "GitHub"))
-                github_count += 1
-    print(f"      Found {github_count} Tokyo companies")
+    方法: S&P 500 × Japan Dev "global-offices" の交差
+    """
+    # 1. S&P 500 リストを取得
+    sp500_companies = fetch_sp500_companies(debug=debug)
     
     time.sleep(0.5)
     
-    # 3. BuiltIn
-    print("  [3] Fetching BuiltIn articles...")
-    builtin_count = 0
-    for url in BUILTIN_URLS:
-        html = _get(url, debug=debug, debug_name=f"builtin_{builtin_count}.html")
-        if html and not _looks_like_block_page(html):
-            names = _parse_builtin(html)
-            for n in names:
-                all_candidates.append((n, "Tokyo", None, "BuiltIn"))
-            builtin_count += len(names)
-        time.sleep(0.5)
-    print(f"      Found {builtin_count} companies")
+    # 2. Japan Dev リストを取得
+    japan_dev_companies = fetch_japan_dev_companies(debug=debug)
     
-    # フィルタリング - KnownListは住所をそのまま使用
-    def addr_query(name: str, loc: str, source: str) -> str:
-        if source == "KnownList":
-            # KnownListは既に実際の住所が入っている
-            return loc
-        elif "Tokyo" in loc:
-            return f"{name} 本社 {loc} 日本"
-        else:
-            return f"{name} 本社 東京 日本"
+    # 3. 交差を計算
+    print("  [3] Computing intersection...")
     
+    # 名前の正規化関数
+    def normalize(name: str) -> str:
+        n = name.lower().strip()
+        # 一般的な suffix を除去
+        n = re.sub(r'\s*(inc\.?|corp\.?|ltd\.?|llc|co\.?,?\s*ltd\.?|corporation|,?\s*inc\.?|plc|\(the\))$', '', n, flags=re.I)
+        n = re.sub(r'\s+', ' ', n).strip()
+        return n
+    
+    # S&P 500 の正規化名 -> 元の名前
+    sp500_normalized = {normalize(name): name for name in sp500_companies}
+    
+    # Japan Dev の正規化名 -> (元の名前, URL)
+    japan_dev_normalized = {normalize(name): (name, url) for name, url in japan_dev_companies.items()}
+    
+    # 交差を見つける
+    intersection = []
+    matched_sp500 = set()
+    
+    for jd_norm, (jd_name, jd_url) in japan_dev_normalized.items():
+        # 完全一致
+        if jd_norm in sp500_normalized:
+            intersection.append((sp500_normalized[jd_norm], jd_url, "S&P500 × JapanDev"))
+            matched_sp500.add(jd_norm)
+            continue
+        
+        # 部分一致（例: "Google" in "Alphabet Inc."）
+        for sp_norm, sp_name in sp500_normalized.items():
+            if sp_norm in matched_sp500:
+                continue
+            # 一方が他方を含む
+            if jd_norm in sp_norm or sp_norm in jd_norm:
+                intersection.append((sp_name, jd_url, "S&P500 × JapanDev"))
+                matched_sp500.add(sp_norm)
+                break
+    
+    print(f"      Found {len(intersection)} matching companies")
+    
+    # 4. フィルタリング
     out = []
     seen = set()
     
-    for name, loc, url, source in all_candidates:
+    for name, url, source in intersection:
         name = _clean_text(name)
         if not name:
             continue
@@ -467,10 +420,47 @@ def build_foreign_tokyo50(*, debug: bool = False, exclude_names: Optional[Set[st
         out.append(CompanyRow(
             name=name,
             category="ForeignTokyoOffice",
-            address_query=addr_query(name, loc, source),
+            address_query=make_address_query(name),
             source=source,
             url=url,
         ))
+    
+    # 50社に満たない場合、S&P500上位から追加
+    if len(out) < 50:
+        print(f"  [4] Adding more S&P 500 companies (current: {len(out)})...")
+        # S&P 500 の上位企業を追加（東京オフィスがある可能性が高い大企業）
+        priority_companies = [
+            "Apple", "Microsoft", "Nvidia", "Amazon", "Meta Platforms",
+            "Alphabet", "Broadcom", "Tesla", "Oracle", "Salesforce",
+            "Adobe", "Cisco", "Intel", "IBM", "Qualcomm",
+            "JPMorgan Chase", "Goldman Sachs", "Morgan Stanley",
+            "Visa", "Mastercard", "American Express", "BlackRock",
+            "Accenture", "Netflix", "Uber", "PayPal", "Airbnb",
+            "Johnson & Johnson", "Pfizer", "Merck", "Eli Lilly",
+            "Procter & Gamble", "Coca-Cola", "PepsiCo",
+            "Caterpillar", "Boeing", "3M", "Honeywell",
+            "ExxonMobil", "Chevron",
+        ]
+        
+        for name in priority_companies:
+            if len(out) >= 50:
+                break
+            nlow = name.lower()
+            if nlow in seen:
+                continue
+            if exclude_names and nlow in exclude_names:
+                continue
+            if is_japanese(name):
+                continue
+            
+            seen.add(nlow)
+            out.append(CompanyRow(
+                name=name,
+                category="ForeignTokyoOffice",
+                address_query=make_address_query(name),
+                source="S&P500 (Top)",
+                url=None,
+            ))
     
     return out[:50]
 
@@ -506,7 +496,7 @@ def main() -> None:
     args = ap.parse_args()
 
     print("=" * 60)
-    print("Japan Top200 + Foreign Tokyo 50 CSV Generator (Fixed)")
+    print("Japan Top200 + Foreign Tokyo 50 CSV Generator")
     print("=" * 60)
 
     jp_exclude = set()
@@ -531,6 +521,8 @@ def main() -> None:
         write_csv("foreign_tokyo50_mymaps.csv", foreign)
     except Exception as e:
         print(f"  [ERROR] {repr(e)}")
+        import traceback
+        traceback.print_exc()
         write_csv("foreign_tokyo50_mymaps.csv", [])
 
     print("\n" + "=" * 60)

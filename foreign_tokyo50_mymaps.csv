@@ -1,51 +1,47 @@
 Name,Address,Category,Rank,MarketCapUSD,Ticker,Source,URL
-Google,東京都渋谷区渋谷3丁目21-3 渋谷ストリーム,ForeignTokyoOffice,,,,KnownList,https://www.google.com/about/careers/locations/tokyo/
-Microsoft,東京都港区港南2-16-3 品川グランドセントラルタワー,ForeignTokyoOffice,,,,KnownList,https://microsoft.com/ja-jp/
-Amazon Japan,東京都目黒区下目黒1-8-1 アルコタワー,ForeignTokyoOffice,,,,KnownList,https://www.amazon.jobs/en/locations/tokyo-area-japan
-Apple,東京都港区六本木6-10-1 六本木ヒルズ,ForeignTokyoOffice,,,,KnownList,https://www.apple.com/jp/
-Meta,東京都港区虎ノ門1-23-1 虎ノ門ヒルズ森タワー,ForeignTokyoOffice,,,,KnownList,https://www.meta.com/
-IBM,東京都中央区日本橋箱崎町19-21,ForeignTokyoOffice,,,,KnownList,https://www.ibm.com/jp-ja
-Oracle,東京都港区北青山2-5-8 オラクル青山センター,ForeignTokyoOffice,,,,KnownList,https://www.oracle.com/jp/
-SAP,東京都千代田区大手町1-2-1 三井物産ビル,ForeignTokyoOffice,,,,KnownList,https://www.sap.com/japan/
-Salesforce,東京都千代田区丸の内1-1-3 日本生命丸の内ガーデンタワー,ForeignTokyoOffice,,,,KnownList,https://www.salesforce.com/jp/
-Adobe,東京都品川区大崎1-11-2 ゲートシティ大崎イーストタワー,ForeignTokyoOffice,,,,KnownList,https://www.adobe.com/jp/
-Cisco,東京都港区赤坂9-7-1 ミッドタウン・タワー,ForeignTokyoOffice,,,,KnownList,https://www.cisco.com/c/ja_jp/
-Nvidia,東京都港区赤坂9-7-1 ミッドタウン・タワー,ForeignTokyoOffice,,,,KnownList,https://www.nvidia.com/ja-jp/
-Dell Technologies,東京都千代田区大手町1-2-1 Otemachi Oneタワー,ForeignTokyoOffice,,,,KnownList,https://www.dell.com/ja-jp
-VMware,東京都港区芝浦3-1-1 田町ステーションタワーN,ForeignTokyoOffice,,,,KnownList,https://www.vmware.com/jp.html
-Qualcomm,東京都港区北青山2-14-4 アーガイル青山,ForeignTokyoOffice,,,,KnownList,https://www.qualcomm.com/
-Goldman Sachs,東京都港区六本木6-10-1 六本木ヒルズ森タワー,ForeignTokyoOffice,,,,KnownList,http://www.goldmansachs.com/japan/
-JP Morgan,東京都千代田区丸の内2-7-3 東京ビルディング,ForeignTokyoOffice,,,,KnownList,https://www.jpmorgan.com/JP/
-Barclays,東京都港区六本木6-10-1 六本木ヒルズ森タワー,ForeignTokyoOffice,,,,KnownList,http://joinus.barclays.com/japan/
-Citibank,東京都千代田区大手町1-1-1 大手町パークビル,ForeignTokyoOffice,,,,KnownList,https://www.citigroup.jp/
-UBS,東京都千代田区大手町1-5-1 大手町ファーストスクエア,ForeignTokyoOffice,,,,KnownList,https://www.ubs.com/jp/
-Credit Suisse,東京都港区六本木1-6-1 泉ガーデンタワー,ForeignTokyoOffice,,,,KnownList,https://www.credit-suisse.com/jp/
-Deutsche Bank,東京都千代田区永田町2-11-1 山王パークタワー,ForeignTokyoOffice,,,,KnownList,https://www.db.com/japan/
-BlackRock,東京都千代田区丸の内1-8-3 丸の内トラストタワー,ForeignTokyoOffice,,,,KnownList,https://www.blackrock.com/jp/
-Accenture,東京都港区赤坂1-8-1 赤坂インターシティAIR,ForeignTokyoOffice,,,,KnownList,https://www.accenture.com/jp-ja
-Deloitte,東京都千代田区丸の内3-2-3 丸の内二重橋ビルディング,ForeignTokyoOffice,,,,KnownList,https://www2.deloitte.com/jp/
-PwC,東京都千代田区大手町1-1-1 大手町パークビルディング,ForeignTokyoOffice,,,,KnownList,https://www.pwc.com/jp/
-McKinsey,東京都港区六本木1-6-1 泉ガーデンタワー,ForeignTokyoOffice,,,,KnownList,https://www.mckinsey.com/jp/
-Boston Consulting Group,東京都千代田区丸の内1-6-1 丸の内センタービル,ForeignTokyoOffice,,,,KnownList,https://www.bcg.com/ja-jp/
-Bain & Company,東京都港区赤坂9-7-1 ミッドタウン・タワー,ForeignTokyoOffice,,,,KnownList,https://www.bain.com/ja/
-EY,東京都千代田区有楽町1-1-2 東京ミッドタウン日比谷,ForeignTokyoOffice,,,,KnownList,https://www.ey.com/ja_jp
-KPMG,東京都千代田区大手町1-9-5 大手町フィナンシャルシティ ノースタワー,ForeignTokyoOffice,,,,KnownList,https://home.kpmg/jp/
-Stripe,東京都渋谷区神宮前6-12-18,ForeignTokyoOffice,,,,KnownList,https://stripe.com/jp
-Indeed,東京都渋谷区恵比寿4-20-3 恵比寿ガーデンプレイスタワー,ForeignTokyoOffice,,,,KnownList,https://www.indeed.jobs/
-Slack,東京都千代田区丸の内1-1-3 日本生命丸の内ガーデンタワー,ForeignTokyoOffice,,,,KnownList,https://slack.com/intl/ja-jp/
-Atlassian,東京都港区虎ノ門4-1-1 神谷町トラストタワー,ForeignTokyoOffice,,,,KnownList,https://www.atlassian.com/ja
-Datadog,東京都港区六本木1-4-5 アークヒルズサウスタワー,ForeignTokyoOffice,,,,KnownList,https://www.datadoghq.com/ja/
-Snowflake,東京都千代田区丸の内1-6-5 丸の内北口ビル,ForeignTokyoOffice,,,,KnownList,https://www.snowflake.com/ja/
-ServiceNow,東京都港区赤坂1-12-32 アーク森ビル,ForeignTokyoOffice,,,,KnownList,https://www.servicenow.com/jp/
-Workday,東京都港区虎ノ門1-23-1 虎ノ門ヒルズ森タワー,ForeignTokyoOffice,,,,KnownList,https://www.workday.com/ja-jp/
-Splunk,東京都千代田区大手町1-1-1 大手町パークビル,ForeignTokyoOffice,,,,KnownList,https://www.splunk.com/ja_jp
-Twilio,東京都渋谷区神宮前5-52-2 青山オーバルビル,ForeignTokyoOffice,,,,KnownList,https://www.twilio.com/ja-jp
-CrowdStrike,東京都港区虎ノ門1-23-1 虎ノ門ヒルズ森タワー,ForeignTokyoOffice,,,,KnownList,https://www.crowdstrike.jp/
-Snyk,東京都渋谷区渋谷2-24-12 渋谷スクランブルスクエア,ForeignTokyoOffice,,,,KnownList,https://snyk.io/
-Rubrik,東京都港区虎ノ門1-17-1 虎ノ門ヒルズビジネスタワー,ForeignTokyoOffice,,,,KnownList,https://www.rubrik.com/ja
-Palo Alto Networks,東京都千代田区丸の内1-8-1 丸の内トラストタワーN館,ForeignTokyoOffice,,,,KnownList,https://www.paloaltonetworks.jp/
-Fortinet,東京都港区六本木7-7-7 Tri-Seven Roppongi,ForeignTokyoOffice,,,,KnownList,https://www.fortinet.com/jp
-Qualtrics,東京都千代田区丸の内1-5-1 新丸の内ビルディング,ForeignTokyoOffice,,,,KnownList,https://www.qualtrics.com/
-Crunchyroll,東京都渋谷区渋谷2-21-1 渋谷ヒカリエ,ForeignTokyoOffice,,,,KnownList,https://www.crunchyroll.com/
-Braze,東京都渋谷区神宮前6-12-18,ForeignTokyoOffice,,,,KnownList,https://www.braze.com/
-Dynatrace,東京都千代田区丸の内2-1-1 丸の内MY PLAZA,ForeignTokyoOffice,,,,KnownList,https://www.dynatrace.com/
+Moderna,Moderna 東京オフィス,ForeignTokyoOffice,,,,S&P500 × JapanDev,https://japan-dev.com/companies/mode
+HP Inc.,HP 東京オフィス,ForeignTokyoOffice,,,,S&P500 × JapanDev,https://japan-dev.com/companies/wealthpark
+EQT Corporation,EQT 東京オフィス,ForeignTokyoOffice,,,,S&P500 × JapanDev,https://japan-dev.com/companies/qt
+LabCorp,Lab 東京オフィス,ForeignTokyoOffice,,,,S&P500 × JapanDev,https://japan-dev.com/companies/moon-creative-lab
+PPL Corporation,PPL 東京オフィス,ForeignTokyoOffice,,,,S&P500 × JapanDev,https://japan-dev.com/companies/applied-intuition
+Microsoft,Microsoft 東京オフィス,ForeignTokyoOffice,,,,S&P500 × JapanDev,https://japan-dev.com/companies/microsoft
+Apple Inc.,Apple 東京オフィス,ForeignTokyoOffice,,,,S&P500 × JapanDev,https://japan-dev.com/companies/apple
+Goldman Sachs,Goldman Sachs 東京オフィス,ForeignTokyoOffice,,,,S&P500 × JapanDev,https://japan-dev.com/companies/goldman-sachs
+Morgan Stanley,Morgan Stanley 東京オフィス,ForeignTokyoOffice,,,,S&P500 × JapanDev,https://japan-dev.com/companies/morgan-stanley
+Apple,Apple 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Nvidia,Nvidia 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Amazon,Amazon 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Meta Platforms,Meta Platforms 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Alphabet,Alphabet 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Broadcom,Broadcom 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Tesla,Tesla 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Oracle,Oracle 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Salesforce,Salesforce 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Adobe,Adobe 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Cisco,Cisco 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Intel,Intel 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+IBM,IBM 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Qualcomm,Qualcomm 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+JPMorgan Chase,JPMorgan Chase 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Visa,Visa 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Mastercard,Mastercard 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+American Express,American Express 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+BlackRock,BlackRock 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Accenture,Accenture 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Netflix,Netflix 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Uber,Uber 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+PayPal,PayPal 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Airbnb,Airbnb 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Johnson & Johnson,Johnson & Johnson 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Pfizer,Pfizer 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Merck,Merck 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Eli Lilly,Eli Lilly 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Procter & Gamble,Procter & Gamble 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Coca-Cola,Coca-Cola 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+PepsiCo,PepsiCo 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Caterpillar,Caterpillar 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Boeing,Boeing 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+3M,3M 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Honeywell,Honeywell 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+ExxonMobil,ExxonMobil 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
+Chevron,Chevron 東京オフィス,ForeignTokyoOffice,,,,S&P500 (Top),
