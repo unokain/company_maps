@@ -1,0 +1,4 @@
+Name,Address,Category,Rank,MarketCapUSD,Ticker,Source
+Toyota,トヨタ自動車 本社 東京,JapanTop200,1,$271.25 B,TM,CompaniesMarketCap
+Mitsubishi UFJ Financial,三菱UFJフィナンシャル・グループ 本社 東京,JapanTop200,2,$182.03 B,MUFG,CompaniesMarketCap
+Sony,ソニー 本社 東京,JapanTop200,3,$159.64 B,SONY,CompaniesMarketCap
